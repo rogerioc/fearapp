@@ -1,0 +1,116 @@
+# App web para responder perguntas sobre filmes de terror usando ChatGPT e langchain.
+# Imports
+import streamlit as st
+from dotenv import load_dotenv
+# import os
+# import textwrap
+# import chromadb
+# import langchain
+# import sqlalchemy
+# import langchain_openai
+from langchain_openai import ChatOpenAI
+from langchain.prompts import PromptTemplate
+from langchain_core.messages import BaseMessage
+from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_core.chat_history import BaseChatMessageHistory
+from pydantic import BaseModel, Field
+
+# Carrega o arquivo de variáveis de ambiente
+# Configure seu .env com as variáveis necessárias
+# OPENAI_API_KEY
+
+load_dotenv()
+# Temeratura 0 para ser mais preciso
+chatGpt = ChatOpenAI(temperature = 0)
+
+# Template para a conversa
+template = """Esta é uma conversa entre um cinéfilo e um especialista em filmes de terror. 
+                Você é o especialista em filmes de terror, conhece bem os filmes clássicos e novos de terror e deve responder com a maior precisão possível.
+
+Current conversation:
+{history}
+Human: {input}
+TerrorSpecialist:"""
+
+question_prompt = PromptTemplate(input_variables = ["history", "input"], template = template)
+
+# Classe para armazenar o histórico de mensagens em memória
+class InMemoryHistory(BaseChatMessageHistory, BaseModel):
+    messages: list[BaseMessage] = Field(default_factory=list)
+    def add_messages(self, messages: list[BaseMessage]) -> None:        
+        self.messages.extend(messages)
+
+    def clear(self) -> None:
+        self.messages = []
+
+store = {}
+
+# Função para obter o histórico de mensagens por ID de sessão
+def get_by_session_id(session_id: str) -> BaseChatMessageHistory:
+    if session_id not in store:
+        store[session_id] = InMemoryHistory()
+    return store[session_id]
+
+chain = question_prompt | chatGpt
+## CobnversationChain será descontinuado em breve, então comecei a usar o RunnableWithMessageHistory para entender as diferenças
+conversation = RunnableWithMessageHistory(chain, get_by_session_id,
+                                          input_messages_key="input",
+                                          history_messages_key="history")
+
+def get_response(question):
+    prompt = { "ability": "filmes", "input": question}        
+    resultado = conversation.invoke(prompt, config={"configurable": {"session_id": "1"}})
+    print(store)
+    return "Especialista: " + resultado.content
+
+########## App Web ##########
+
+# Configuração da página do Streamlit
+st.set_page_config(page_title="FEAR App", page_icon=":skull:", layout="wide")
+
+# Barra Lateral com instruções
+st.sidebar.title("Instruções")
+st.sidebar.markdown("""
+### Como Utilizar a App:
+
+- Insira a pergunta sobre filmes de terror no campo de texto.
+
+### Finalidade da App:
+Um pequeno assistente para responder perguntas sobre filmes de terror, utilizando o modelo ChatGPT da OpenAI e LangChain.
+""")
+
+# Botão de suporte na barra lateral
+if st.sidebar.button("Suporte"):
+    st.sidebar.write("")
+
+# Título principal
+st.title(":skull: Respostas sobe Filmes de terror :skull:")
+
+# Interface principal
+st.header("Tudo Respostas sobe Filmes de terrors")
+
+# Caixa de texto para input do usuário
+question = st.text_input("Digite a pergunta:").upper()
+
+# Se o usuário pressionar o botão, entramos neste bloco
+if st.button("Analisar"):
+
+    # Se temos o código da ação (ticker)
+    if question:
+
+        # Inicia o processamento
+        with st.spinner("Buscando a resposta. Aguarde..."):                                            
+            resposta = get_response(question)
+            # Imprime a resposta
+            st.markdown(resposta)            
+            
+    else:
+        st.error("Pergunta inválida.")
+
+
+# Fim
+# Obrigado!
+
+
+
+
