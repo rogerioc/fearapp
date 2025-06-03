@@ -2,12 +2,6 @@
 # Imports
 import streamlit as st
 from dotenv import load_dotenv
-# import os
-# import textwrap
-# import chromadb
-# import langchain
-# import sqlalchemy
-# import langchain_openai
 from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain_core.messages import BaseMessage

@@ -18,4 +18,4 @@ E para rodar o app web execute no terminal
  ```
 Obs: Para conseguir usar você deve criar e configurar o arquivo *.env* com `OPENAI_API_KEY = "ai_key"` ou configura essa váriavel no seu PATH
 
-![Tela do app](screenshot.png)
+![Tela do app](/img/screenshot.png)
