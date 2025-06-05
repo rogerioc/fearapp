@@ -14,8 +14,7 @@ from pydantic import BaseModel, Field
 # OPENAI_API_KEY
 
 load_dotenv()
-# Temeratura 0 para ser mais preciso
-chatGpt = ChatOpenAI(temperature = 0)
+# Temperatura 0 para ser mais preciso
 
 # Template para a conversa
 template = """Esta é uma conversa entre um cinéfilo e um especialista em filmes de terror. 
@@ -45,13 +44,14 @@ def get_by_session_id(session_id: str) -> BaseChatMessageHistory:
         store[session_id] = InMemoryHistory()
     return store[session_id]
 
-chain = question_prompt | chatGpt
-## CobnversationChain será descontinuado em breve, então comecei a usar o RunnableWithMessageHistory para entender as diferenças
-conversation = RunnableWithMessageHistory(chain, get_by_session_id,
+def config(chatGpt):
+    chain = question_prompt | chatGpt
+    ## CobnversationChain será descontinuado em breve, então comecei a usar o RunnableWithMessageHistory para entender as diferenças
+    return RunnableWithMessageHistory(chain, get_by_session_id,
                                           input_messages_key="input",
                                           history_messages_key="history")
 
-def get_response(question):
+def get_response(question, conversation):
     prompt = { "ability": "filmes", "input": question}        
     resultado = conversation.invoke(prompt, config={"configurable": {"session_id": "1"}})
     print(store)
@@ -62,6 +62,10 @@ def get_response(question):
 # Configuração da página do Streamlit
 st.set_page_config(page_title="FEAR App", page_icon=":skull:", layout="wide")
 
+openai_api_key = st.sidebar.text_input("Adicione sua OpenAI API Key", type = "password")
+chatGpt = ChatOpenAI(temperature = 0.5, openai_api_key=openai_api_key)
+
+conversation = config(chatGpt)
 # Barra Lateral com instruções
 st.sidebar.title("Instruções")
 st.sidebar.markdown("""
@@ -74,9 +78,6 @@ Um pequeno assistente para responder perguntas sobre filmes de terror, utilizand
 """)
 
 # Botão de suporte na barra lateral
-if st.sidebar.button("Suporte"):
-    st.sidebar.write("")
-
 # Título principal
 st.title(":skull: Respostas sobe Filmes de terror :skull:")
 
@@ -84,23 +85,25 @@ st.title(":skull: Respostas sobe Filmes de terror :skull:")
 st.header("Tudo Respostas sobe Filmes de terrors")
 
 # Caixa de texto para input do usuário
-question = st.text_input("Digite a pergunta:").upper()
+question = st.text_input("Digite a pergunta:",  placeholder = "Digite uma pergunta!").upper()
 
 # Se o usuário pressionar o botão, entramos neste bloco
 if st.button("Analisar"):
-
+    # Verificação da chave de API
+    if not openai_api_key:
+        st.info("Adicione sua OpenAI API key para continuar.")
+        st.stop()
     # Se temos o código da ação (ticker)
     if question:
 
         # Inicia o processamento
         with st.spinner("Buscando a resposta. Aguarde..."):                                            
-            resposta = get_response(question)
+            resposta = get_response(question, conversation)
             # Imprime a resposta
             st.markdown(resposta)            
             
     else:
         st.error("Pergunta inválida.")
-
 
 # Fim
 # Obrigado!
