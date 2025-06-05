@@ -63,14 +63,19 @@ def get_response(question, conversation):
 st.set_page_config(page_title="FEAR App", page_icon=":skull:", layout="wide")
 
 openai_api_key = st.sidebar.text_input("Adicione sua OpenAI API Key", type = "password")
-chatGpt = ChatOpenAI(temperature = 0.5, openai_api_key=openai_api_key)
-
-conversation = config(chatGpt)
+st.sidebar.markdown("""
+https://platform.openai.com/
+""")                    
+# Configuração do modelo ChatGPT
+def configModel(openai_api_key):
+    chatGpt = ChatOpenAI(temperature = 0.5, openai_api_key=openai_api_key)
+    return config(chatGpt)
+    
 # Barra Lateral com instruções
 st.sidebar.title("Instruções")
 st.sidebar.markdown("""
 ### Como Utilizar a App:
-
+- Primeiro, adicione sua OpenAI API Key no campo de texto na barra lateral.
 - Insira a pergunta sobre filmes de terror no campo de texto.
 
 ### Finalidade da App:
@@ -93,6 +98,9 @@ if st.button("Analisar"):
     if not openai_api_key:
         st.info("Adicione sua OpenAI API key para continuar.")
         st.stop()
+    else:
+        # Configura o modelo ChatGPT com a chave de API fornecida
+        conversation = configModel(openai_api_key)
     # Se temos o código da ação (ticker)
     if question:
 
@@ -103,7 +111,7 @@ if st.button("Analisar"):
             st.markdown(resposta)            
             
     else:
-        st.error("Pergunta inválida.")
+        st.error("Verifique se a pergunta foi preenchida corretamente ou se a chave de API foi adicionada.")
 
 # Fim
 # Obrigado!
