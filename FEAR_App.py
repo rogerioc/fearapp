@@ -12,9 +12,9 @@ from pydantic import BaseModel, Field
 # Carrega o arquivo de variáveis de ambiente
 # Configure seu .env com as variáveis necessárias
 # OPENAI_API_KEY
+# Usar se for utilizar variáveis de ambiente
+# load_dotenv()
 
-load_dotenv()
-# Temperatura 0 para ser mais preciso
 
 # Template para a conversa
 template = """Esta é uma conversa entre um cinéfilo e um especialista em filmes de terror. 
@@ -75,11 +75,11 @@ st.sidebar.markdown("""
 
 ### Finalidade da App:
 Um pequeno assistente para responder perguntas sobre filmes de terror, utilizando o modelo ChatGPT da OpenAI e LangChain.
+                    
+## Contato
+- **Linkedin:** https://www.linkedin.com/in/rogeriocs/
+- **GitHub:** https://github.com/rogerioc/fearapp
 """)
-
-# Botão de suporte na barra lateral
-# Título principal
-st.title(":skull: Respostas sobe Filmes de terror :skull:")
 
 # Interface principal
 st.header("Tudo Respostas sobe Filmes de terrors")
