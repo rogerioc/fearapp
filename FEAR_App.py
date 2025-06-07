@@ -95,5 +95,3 @@ if prompt := st.chat_input(placeholder = "Digite uma pergunta para começar!"):
 
         # Armazenamento dos passos intermediários
         st.session_state.steps[str(len(cv.getMessages()) - 1)] = response["intermediate_steps"]  
-
-

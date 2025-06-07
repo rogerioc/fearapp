@@ -72,4 +72,5 @@ wheel==0.45.1
 chromadb==0.6.3
 langchain==0.3.22
 sqlalchemy==2.0.40
-langchain-openai==0.3.19 
+langchain-openai==0.3.19
+langchain-community==0.3.24
