@@ -21,6 +21,6 @@ Obs: Para conseguir usar você deve criar e configurar o arquivo *.env* com `OPE
 
 Ou nessa nova versão deixar para adicionar no campo do site onde pede a apikey
 
-Versão online https://rcsfearapp.streamlit.app/
+Versão online https://fearappv2.streamlit.app/
 
 ![Tela do app](/img/screenshot.png)
