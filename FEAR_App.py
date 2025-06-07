@@ -1,8 +1,7 @@
 # App web para responder perguntas sobre filmes de terror usando ChatGPT e langchain.
 # Imports
 import streamlit as st
-import QuestionAnswerChain as qa
-from QuestionAnswerChain import InMemoryHistory
+import ChatVersion as ch
 # Carrega o arquivo de variáveis de ambiente
 # Configure seu .env com as variáveis necessárias
 # OPENAI_API_KEY
@@ -10,14 +9,10 @@ from QuestionAnswerChain import InMemoryHistory
 # load_dotenv()
 
 template = """Esta é uma conversa entre um cinéfilo e um especialista em filmes de terror. 
-                Você é o especialista em filmes de terror, conhece bem os filmes clássicos e novos de terror e deve responder com a maior precisão possível.
+                Você é o especialista em filmes de terror, conhece bem os filmes clássicos e novos de terror e deve responder 
+                com a maior precisão possível. E somente sobre este assunto."""
 
-    Current conversation:
-    {history}
-    Human: {input}
-    TerrorSpecialist:"""
-
-questionAnswer = qa.QuestionAnswerChain(template = template, inMemoryHistory = InMemoryHistory())
+cv = ch.ChatVersion(prompt_template= template)
 ########## App Web ##########
 
 # Configuração da página do Streamlit
@@ -44,35 +39,61 @@ Um pequeno assistente para responder perguntas sobre filmes de terror, utilizand
 """)
 
 # Interface principal
-st.header("Tudo Respostas sobe Filmes de terrors")
+st.header("Tudo sobe Filmes de terrors")
+if len(cv.getMessages()) == 0 or st.sidebar.button("Reset"):
+    # Limpa o histórico de mensagens e inicia a conversa
+    cv.clear()
+    st.session_state.steps = {}
 
-# Caixa de texto para input do usuário
-question = st.text_input("Digite a pergunta:",  placeholder = "Digite uma pergunta!").upper()
+# Definição de avatares para os participantes da conversa
+avatars = {"human": "user", "ai": "assistant"}
 
-# Se o usuário pressionar o botão, entramos neste bloco
-if st.button("Analisar"):
+# Exibe mensagens no chat
+# Loop para exibir mensagens no chat
+# Itera sobre cada mensagem no histórico de mensagens
+for idx, msg in enumerate(cv.getMessages()):  
+
+    # Cria uma mensagem no chat com o avatar correspondente ao tipo de usuário (humano ou IA)
+    with st.chat_message(avatars[msg.type]):  
+        print(msg.type)
+        # Itera sobre os passos armazenados para cada mensagem, se houver
+        for step in st.session_state.steps.get(str(idx), []):  
+
+            # Se o passo atual indica uma exceção, pula para o próximo passo
+            if step[0].tool == "_Exception":  
+                continue
+
+            # Cria um expander para cada ferramenta usada na resposta, mostrando o input
+            with st.expander(f"✅ **{step[0].tool}**: {step[0].tool_input}"): 
+
+                # Exibe o log de execução da ferramenta 
+                st.write(step[0].log)  
+
+                # Exibe o resultado da execução da ferramenta
+                st.write(f"**{step[1]}**")  
+
+        # Exibe o conteúdo da mensagem no chat
+        st.write(msg.content)
+
+if prompt := st.chat_input(placeholder = "Digite uma pergunta para começar!"):
     # Verificação da chave de API
     if not openai_api_key:
         st.info("Adicione sua OpenAI API key para continuar.")
         st.stop()
     else:
-        # Configura o modelo ChatGPT com a chave de API fornecida
-        questionAnswer.settingKey(openai_api_key)
-    # Se temos o código da ação (ticker)
-    if question:
+        # Configuração do modelo de linguagem da OpenAI
+        cv.configure(openai_api_key)
 
-        # Inicia o processamento
-        with st.spinner("Buscando a resposta. Aguarde..."):                                            
-            resposta =  questionAnswer.get_response(question)
-            # Imprime a resposta
-            st.markdown(resposta)            
-            
-    else:
-        st.error("Verifique se a pergunta foi preenchida corretamente ou se a chave de API foi adicionada.")
+    st.chat_message("user").write(prompt)            
+    # Exibição da resposta do assistente
+    with st.chat_message("assistant"):
 
-# Fim
-# Obrigado!
+        # Adiciona a mensagem do usuário e executa o agente
+        response = cv.add_user_message(prompt, st.container())        
+        st.write(response["output"])
+        # st.write(response["output"])
 
-
+        # Armazenamento dos passos intermediários
+        st.session_state.steps[str(len(cv.getMessages()) - 1)] = response["intermediate_steps"]  
 
 

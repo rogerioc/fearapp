@@ -19,7 +19,12 @@ class QuestionAnswerChain:
     # Template para a conversa
        
     def __init__(self,template, inMemoryHistory):
-        self.template = template
+        self.template = template + """
+    Current conversation:
+    {history}
+    Human: {input}
+    TerrorSpecialist:"""
+        
         self.question_prompt = PromptTemplate(input_variables = ["history", "input"], template = template)
         self.store = {}
         self.inMemoryHistory = inMemoryHistory        
