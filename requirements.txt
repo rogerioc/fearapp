@@ -70,7 +70,7 @@ urllib3==2.3.0
 watchdog==6.0.0
 wheel==0.45.1
 chromadb==0.6.3
-langchain==0.3.22
+langchain==0.3.25
 sqlalchemy==2.0.40
 langchain-openai==0.3.19
 langchain-community==0.3.24
