@@ -1,26 +1,43 @@
-# FEAR App – Film Experience And Reviews 
-ObS: Nome sugerido pelo [ChatGpt](https://https://chatgpt.com)
+# FEAR — Film Experience And Reviews 🎬👻
 
-Esse é um código mini app em python de exemplo de como criar um agente especialista utilizando [ChatGpt](https://https://chatgpt.com)
- e [LangChain](https://www.langchain.com/). Foi baseado no estudo de caso do curso [Pós-Graduação em Engenharia de Inteligência Artificial da Data Science Academy](https://www.datascienceacademy.com.br/bundle/pos-graduacao-em-engenharia-de-inteligencia-artificial). 
+A specialist **AI agent** for horror movies, built with **LangChain** and an **OpenAI** LLM, served through a **Streamlit** web app. Ask it about horror films, directors, subgenres, or recommendations and it answers in character as a horror-cinema specialist.
 
-Esse projeto já roda um servidor web com uma pagina htmml para rodar o teste. 
+> Portfolio project, developed as a case study during my postgraduate program in AI Engineering (Data Science Academy). The name was, fittingly, suggested by an LLM.
 
-Primeiro você deve instalar os pacotes necessários que se encontrar no 'requirements.txt'. Sugiro dar uma olhada no [Anaconda](https://www.anaconda.com/download) para instalar um hambiente python em sua máquina. 
+## 🔴 Live demo
 
-No terminal rode 
-```python
+👉 **[rcsfearapp.streamlit.app](https://rcsfearapp.streamlit.app/)**
+
+![App screenshot](img/screenshot.png)
+
+## What it demonstrates
+
+- Building a **domain-specialist agent** with a guided system prompt and persona.
+- **LangChain** question-answering chain wired to an OpenAI chat model.
+- A shippable **Streamlit** interface, deployed publicly.
+- API-key handling via `.env` *or* an in-app field, so anyone can try it with their own key.
+
+## Project structure
+
+| File | Purpose |
+|---|---|
+| `FEAR_App.py` | Streamlit web interface. |
+| `QuestionAnswerChain.py` | LangChain Q&A chain + prompt wiring to the OpenAI model. |
+| `requirements.txt` | Dependencies. |
+
+## Running locally
+
+```bash
 pip install -r requirements.txt
+streamlit run FEAR_App.py
 ```
-E para rodar o app web execute no terminal
 
- ```python
- streamlit run FEAR_App.py
- ```
-Obs: Para conseguir usar você deve criar e configurar o arquivo *.env* com `OPENAI_API_KEY = "ai_key"` ou configura essa váriavel no seu PATH
+**Configuration:** provide an OpenAI API key either by creating a `.env` file with `OPENAI_API_KEY="your-key"`, or by pasting it into the key field in the app sidebar.
 
-Ou nessa nova versão deixar para adicionar no campo do site onde pede a apikey
+## Tech stack
 
-Versão online https://rcsfearapp.streamlit.app/
+`Python` · `LangChain` · `OpenAI` · `Streamlit`
 
-![Tela do app](/img/screenshot.png)
+---
+
+*Built by [Rogério Celestino](https://www.linkedin.com/in/rogeriocs/) — senior software engineer focused on Applied AI.*
