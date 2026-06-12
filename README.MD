@@ -40,4 +40,4 @@ streamlit run FEAR_App.py
 
 ---
 
-*Built by [Rogério Celestino](https://www.linkedin.com/in/rogeriocs/) — senior software engineer focused on Applied AI.*
+*Built by [Rogério Celestino](https://rogerioc.github.io/about/) — senior software engineer focused on Applied AI.*
